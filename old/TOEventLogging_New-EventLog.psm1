@@ -1,39 +1,31 @@
 function New-TOEventLog {
-    Param
-    (
-    [Parameter(Mandatory=$true,
-        Position=1)]
-        [String]
+    param (
         $EventLogName,
-    [Parameter(Position=2)]
-        [Int]
-        $EventLogSizeMB = 10,
-    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
-        [Switch]
-        $AppEventLog,
-    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$true)]
-        [String]
-        $AppEventLogExtension = "_pss"
+        [Switch]$AppEventLog,
+        $EventLogSizeMB = 10
     )
-
-    $EventLogSources = Get-WmiObject -Namespace "root\cimv2" -Class "Win32_NTEventLOgFile" | Select-Object FileName, Sources | ForEach-Object -Begin { $hash = @{}} -Process { $hash[$_.FileName] = $_.Sources } -end { $Hash }
-    # If (!(Get-EventLog -List | where {$_.Log -eq $EventLogName})){
-    If (!($EventLogSources.keys -contains $EventLogName)){
+    If (!(Get-EventLog -List | where {$_.Log -eq $EventLogName})){
         $EventLogSize = $EventLogSizeMB * 1MB
         If ($AppEventLog){
-            $EventLogApplogName = $EventLogName + $AppEventLogExtension
+            $EventLogInfoName = $EventLogName + "Info"
+            $EventLogWarningName = $EventLogName + "Warning"
+            $EventLogErrorName = $EventLogName + "Error"
             If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")){
                 $Scriptblock = "
                     New-EventLog -LogName '$EventLogName' -Source '$EventLogName';
                     Limit-EventLog -LogName '$EventLogName' -MaximumSize $EventLogSize;
-                    New-EventLog -LogName Application -Source $EventLogApplogName;
+                    New-EventLog -LogName Application -Source $EventLogInfoName;
+                    New-EventLog -LogName Application -Source $EventLogWarningName;
+                    New-EventLog -LogName Application -Source $EventLogErrorName;
                     Sleep 3
                 "
                 Start-Process -FilePath powershell.exe -ArgumentList "-command", "$ScriptBlock" -verb RunAs
             } else {
                 New-EventLog -LogName $EventLogName -Source $EventLogName
                 Limit-EventLog -LogName $EventLogName -MaximumSize $EventLogSize
-                New-EventLog -LogName Application -Source $EventLogApplogName
+                New-EventLog -LogName Application -Source $EventLogInfoName
+                New-EventLog -LogName Application -Source $EventLogWarningName
+                New-EventLog -LogName Application -Source $EventLogErrorName
             }
         } else {
             If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")){

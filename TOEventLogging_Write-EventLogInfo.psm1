@@ -1,16 +1,36 @@
 function Write-TOEventLogInfo {
-    param (
+    Param
+    (
+    [Parameter(Mandatory=$true,
+        Position=1)]
+        [String]
         $EventLogName,
+        [Parameter(Mandatory=$true,
+        Position=2)]
+        [String]
+        $Message,
+        [Parameter(Mandatory=$false,
+        Position=3)]
+        [String]
         $EventLogID = 1000,
-        [Switch]$AppEventLog,
-        $Message
-
+    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
+        [Switch]
+        $AppEventLog,
+    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$true)]
+        [String]
+        $AppEventLogExtension = "_pss"
     )
-    If (Get-EventLog -List | where {$_.Log -eq $EventLogName}){
+
+    $EventLogSources = Get-WmiObject -Namespace "root\cimv2" -Class "Win32_NTEventLOgFile" | Select-Object FileName, Sources | ForEach-Object -Begin { $hash = @{}} -Process { $hash[$_.FileName] = $_.Sources } -end { $Hash }
+    If ($EventLogSources.keys -contains $EventLogName){
         Write-EventLog -LogName $EventLogName -Source $EventLogName -EntryType Information -EventId $EventLogID -Message $Message -Category 0
         If ($AppEventLog){
-            $EventLogInfoName = $EventLogName + "Info"
-            Write-EventLog -LogName Application -Source $EventLogInfoName -EntryType Error -EventId $EventLogID -Message $Message -Category 0
+            $EventLogApplogName = $EventLogName + $AppEventLogExtension
+            If ($EventLogSources.Application -contains $EventLogApplogName){
+                Write-EventLog -LogName Application -Source $EventLogApplogName -EntryType Information -EventId $EventLogID -Message $Message -Category 0
+            } else {
+                Write-Warning "Could not find source named $EventLogApplogName. Please run command New-TOEventLog first as administrator"
+            }
         }
     } else {
         Write-Warning "Could not find Log named $EventLogName. Please run command Start-TOEventLog first as administrator"
