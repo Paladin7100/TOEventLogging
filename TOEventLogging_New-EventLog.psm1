@@ -17,18 +17,27 @@ function New-TOEventLog {
                     New-EventLog -LogName Application -Source $EventLogInfoName;
                     New-EventLog -LogName Application -Source $EventLogWarningName;
                     New-EventLog -LogName Application -Source $EventLogErrorName;
-                    Sleep 5
+                    Sleep 3
                 "
                 Start-Process -FilePath powershell.exe -ArgumentList "-command", "$ScriptBlock" -verb RunAs
+            } else {
+                New-EventLog -LogName $EventLogName -Source $EventLogName
+                Limit-EventLog -LogName $EventLogName -MaximumSize $EventLogSize
+                New-EventLog -LogName Application -Source $EventLogInfoName
+                New-EventLog -LogName Application -Source $EventLogWarningName
+                New-EventLog -LogName Application -Source $EventLogErrorName
             }
         } else {
             If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")){
             $Scriptblock = "
                 New-EventLog -LogName '$EventLogName' -Source '$EventLogName';
                 Limit-EventLog -LogName '$EventLogName' -MaximumSize $EventLogSize;
-                Sleep 5
+                Sleep 3
             "
             Start-Process -FilePath powershell.exe -ArgumentList "-command", "$ScriptBlock" -verb RunAs
+            } else {
+                New-EventLog -LogName $EventLogName -Source $EventLogName
+                Limit-EventLog -LogName $EventLogName -MaximumSize $EventLogSize
             }
         }
     }
