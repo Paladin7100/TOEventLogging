@@ -1,4 +1,53 @@
 function Remove-TOEventLog {
+<#
+.SYNOPSIS
+    Removes an entire log in windows event log
+
+.DESCRIPTION
+    Removes an entire log in windows event log and optionally a connected source for the application log.
+    The optional source removed is the name pss_'EVENTLOGNAME', but can be changed by use of parameters.
+    
+.PARAMETER EventLogName
+    Mandatory. Name of the event log to be removed.
+
+.PARAMETER Confirm
+    Optional. Ask for confirmation to delete the log and optional source.
+
+.PARAMETER AppEventLog
+    Optional, Switch. If set removes the source in the event log 'Application'. 
+    Default is pss_'EVENTLOGNAME'
+
+.PARAMETER AppEventLogHeader
+    Optional. Option to change header for the event log 'Application' source to remove.
+    Default is pss_'EVENTLOGNAME'
+
+.INPUTS
+    Parameters above
+
+.OUTPUTS
+    Event Log removed
+    Event log source removed
+
+.NOTES
+    Version:        0.9
+    Author:         Frank Honore
+    Creation Date:  11/22/20
+    Purpose/Change: Built the basic functionality of the script.
+
+.LINK
+
+.EXAMPLE
+    Remove-TOEventLog -EventLogName TaskOrganizer
+
+    Removes the event log 'TaskOrganizer'. 
+
+    .EXAMPLE
+    New-TOEventLog -EventLogName TaskOrganizer -EventLogSizeMB 15 -AppEventLog -AppEventLogHeader 'abc_'
+
+    Removes the event log 'TaskOrganizer', and the source in the 'Application' log named ''abc_TaskOrganizer'.
+#>
+
+[CmdletBinding()]
     Param
     (
     [Parameter(Mandatory=$true,

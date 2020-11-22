@@ -1,4 +1,54 @@
 function Write-TOEventLogInfo {
+<#
+.SYNOPSIS
+    Writes an Info message to the event log.
+
+.DESCRIPTION
+    Writes an Info message to the event log.
+    
+.PARAMETER EventLogName
+    Mandatory. Name of the event log to be written to.
+
+.PARAMETER Message
+    Mandatory. Message to be written to the event log.
+
+.PARAMETER EventLogID
+    Optional. Sets the Event Log ID. 
+
+.PARAMETER AppEventLog
+    Optional. If set, writes the message to the event log 'Application' as well. 
+    Default is pss_'EVENTLOGNAME'
+
+.PARAMETER AppEventLogHeader
+    Optional. Option to change header for the event log 'Application' source to write to.
+    Default is pss_'EVENTLOGNAME'
+
+.INPUTS
+    Parameters above
+
+.OUTPUTS
+    Writes to Event Log.
+
+.NOTES
+    Version:        0.9
+    Author:         Frank Honore
+    Creation Date:  11/22/20
+    Purpose/Change: Built the basic functionality of the script.
+
+.LINK
+
+.EXAMPLE
+    Write-TOEventLogInfo -EventLogName TaskOrganizer -Message "Everything is OK"
+
+    Writes Information event to the event log 'TaskOrganizer'. 
+
+    .EXAMPLE
+    Write-TOEventLogInfo -EventLogName TaskOrganizer -Message "Everything is OK" -EventLogID 1010 -AppEventLog -AppEventLogHeader "abc_"
+
+    Writes Information event to the event log 'TaskOrganizer' using the eventid 1010 and same Information message written to 'Application' log using the source 'abc_TaskOrganizer'.
+#>
+
+[CmdletBinding()]
     Param
     (
     [Parameter(Mandatory=$true,
