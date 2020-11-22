@@ -5,7 +5,8 @@ function Remove-TOEventLog {
         Position=1)]
         [String]
         $EventLogName,
-    [Parameter(Position=2)]
+    [Parameter(Mandatory=$false,
+        Position=2)]
         [Switch]
         $Confirm,
     [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
@@ -29,8 +30,8 @@ function Remove-TOEventLog {
         $ScriptblockAppConfirm = "Remove-EventLog -LogName '$EventLogName' -ErrorAction Continue -Confirm;" + "`n"
     }
     If ($EventLogSources.Application -contains $EventLogApplogName) {
-        $ScriptblockApp = $ScriptblockApp + "Remove-EventLog -Source '$EventLogInfoName' -ErrorAction Continue;" + "`n"
-        $ScriptblockAppConfirm = $ScriptblockAppConfirm + "Remove-EventLog -Source '$EventLogInfoName' -ErrorAction Continue -Confirm;" + "`n"
+        $ScriptblockApp = $ScriptblockApp + "Remove-EventLog -Source '$EventLogApplogName' -ErrorAction Continue;"
+        $ScriptblockAppConfirm = $ScriptblockAppConfirm + "Remove-EventLog -Source '$EventLogApplogName' -ErrorAction Continue -Confirm;"
     }
     If ($AppEventLog){
         # Get-EventLog -List | where {$_.log -eq $EventLogName}
