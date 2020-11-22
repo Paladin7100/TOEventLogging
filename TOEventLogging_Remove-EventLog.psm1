@@ -11,12 +11,12 @@ function Remove-TOEventLog {
     [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
         [Switch]
         $AppEventLog,
-    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$true)]
+    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
         [String]
-        $AppEventLogExtension = "_pss"
+        $AppEventLogHeader = "pss_"
     )
 
-    $EventLogApplogName = $EventLogName + $AppEventLogExtension
+    $EventLogApplogName = $AppEventLogHeader + $EventLogName
     $EventLogSources = Get-WmiObject -Namespace "root\cimv2" -Class "Win32_NTEventLOgFile" | Select-Object FileName, Sources | ForEach-Object -Begin { $hash = @{}} -Process { $hash[$_.FileName] = $_.Sources } -end { $Hash }
     $Scriptblock = ""
     $ScriptblockConfirm = ""

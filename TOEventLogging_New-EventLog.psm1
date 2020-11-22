@@ -11,9 +11,9 @@ function New-TOEventLog {
     [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
         [Switch]
         $AppEventLog,
-    [Parameter(ParameterSetName="ApplicationLog",Mandatory=$true)]
+        [Parameter(ParameterSetName="ApplicationLog",Mandatory=$false)]
         [String]
-        $AppEventLogExtension = "_pss"
+        $AppEventLogHeader = "pss_"
     )
 
     $EventLogSources = Get-WmiObject -Namespace "root\cimv2" -Class "Win32_NTEventLOgFile" | Select-Object FileName, Sources | ForEach-Object -Begin { $hash = @{}} -Process { $hash[$_.FileName] = $_.Sources } -end { $Hash }
@@ -21,12 +21,12 @@ function New-TOEventLog {
     If (!($EventLogSources.keys -contains $EventLogName)){
         $EventLogSize = $EventLogSizeMB * 1MB
         If ($AppEventLog){
-            $EventLogApplogName = $EventLogName + $AppEventLogExtension
+            $EventLogApplogName = $AppEventLogHeader + $EventLogName
             If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")){
                 $Scriptblock = "
                     New-EventLog -LogName '$EventLogName' -Source '$EventLogName';
                     Limit-EventLog -LogName '$EventLogName' -MaximumSize $EventLogSize;
-                    New-EventLog -LogName Application -Source $EventLogApplogName;
+                    New-EventLog -LogName 'Application' -Source $EventLogApplogName;
                     Sleep 3
                 "
                 Start-Process -FilePath powershell.exe -ArgumentList "-command", "$ScriptBlock" -verb RunAs
