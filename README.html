@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>TOEventLogging</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="toeventlogging">TOEventLogging</h1>
+<p>Logging to Windows Eventlog</p>
+<h2 id="reason-for-creating-the-script">Reason for creating the script</h2>
+<p>To ease the handling of writing to windows eventlog.
+Sometimes I need to have the Error logs sent to the application log, as it is the one being monitored. This way i can maintain a log for my scripts and have incident handling through the application logs.</p>
+<h2 id="functions">Functions</h2>
+<h3 id="new-toeventlog">New-TOEventLog</h3>
+<p>Creates a new eventlog folder/file in Windows Event Logs and sets size limit.
+Switch to create sources for events in Applicationlog. This will create the source for pss_LOGNAME, or another selfdefined header.
+Starts the command in an elevated window if it's not already so.</p>
+<h3 id="write-toeventloginfo">Write-TOEventLogInfo</h3>
+<p>Writes an info message to eventlog. Switch to write events in Applicationlog as well with the source pss_LOGNAME, or another selfdefined header.</p>
+<h3 id="write-toeventlogwarning">Write-TOEventLogWarning</h3>
+<p>Writes an warning message to eventlog. Switch to write events in Applicationlog as well with the source pss_LOGNAME, or another selfdefined header.</p>
+<h3 id="write-toeventlogerror">Write-TOEventLogError</h3>
+<p>Writes an Error message to eventlog. Switch to write events in Applicationlog as well with the source pss_LOGNAME, or another selfdefined header.</p>
+<h3 id="remove-toeventlogerror">Remove-TOEventLogError</h3>
+<p>Removes eventlog folder/file in Windows Event Logs.
+Switch to remove source for events in Applicationlog. This will remove the source for pss_LOGNAME, or another selfdefined header.
+Starts the command in an elevated window if it's not already so.</p>
+
+    </body>
+    </html>
